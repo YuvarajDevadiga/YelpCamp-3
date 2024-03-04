@@ -19,7 +19,7 @@ const userRoutes = require("./routes/users");
 const campgroundRoutes = require("./routes/campgrounds");
 const reviewRoutes = require("./routes/reviews");
 
-const MongoDBStore = require("connect-mongo")(session);
+const MongoDBStore = require("connect-mongo");
 
 const dbUrl = process.env.DB_URL;
 mongoose.connect(dbUrl, {
@@ -51,10 +51,12 @@ app.use(express.static(path.join(__dirname, "public")));
 // );
 const secret = process.env.SECRET;
 
-const store = new MongoDBStore({
-  url: dbUrl,
-  secret,
+const store = MongoStore.create({
+  mongoUrl: dbUrl,
   touchAfter: 24 * 60 * 60,
+  crypto: {
+    secret: "thisshouldbeabettersecret!",
+  },
 });
 
 store.on("error", function (e) {
