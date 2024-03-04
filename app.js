@@ -51,7 +51,7 @@ app.use(express.static(path.join(__dirname, "public")));
 // );
 const secret = process.env.SECRET;
 
-const store = new MongoDBStore({
+const store = new MongoStore({
     url: dbUrl,
     secret,
     touchAfter: 24 * 60 * 60
