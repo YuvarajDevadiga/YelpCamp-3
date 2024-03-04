@@ -19,21 +19,14 @@ const userRoutes = require("./routes/users");
 const campgroundRoutes = require("./routes/campgrounds");
 const reviewRoutes = require("./routes/reviews");
 
-const MongoDBStore = require("connect-mongo");
+const MongoStore = require("connect-mongo");
 
 const dbUrl = process.env.DB_URL;
-mongoose.connect(dbUrl, {
-  useNewUrlParser: true,
-  useCreateIndex: true,
-  useUnifiedTopology: true,
-  useFindAndModify: false,
-});
-
-const db = mongoose.connection;
-db.on("error", console.error.bind(console, "connection error:"));
-db.once("open", () => {
-  console.log("Database connected");
-});
+main().catch((err) => console.log(err));
+//"mongodb://127.0.0.1:27017/yelp-camp"
+async function main() {
+  await mongoose.connect(dbUrl);
+}
 
 const app = express();
 
