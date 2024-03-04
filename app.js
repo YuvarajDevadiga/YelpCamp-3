@@ -19,14 +19,21 @@ const userRoutes = require("./routes/users");
 const campgroundRoutes = require("./routes/campgrounds");
 const reviewRoutes = require("./routes/reviews");
 
-const MongoStore = require("connect-mongo");
+const MongoStore = require("connect-mongo")(session);
 
 const dbUrl = process.env.DB_URL;
-main().catch((err) => console.log(err));
-//"mongodb://127.0.0.1:27017/yelp-camp"
-async function main() {
-  await mongoose.connect(dbUrl);
-}
+mongoose.connect(dbUrl, {
+    useNewUrlParser: true,
+    useCreateIndex: true,
+    useUnifiedTopology: true,
+    useFindAndModify: false
+});
+
+const db = mongoose.connection;
+db.on("error", console.error.bind(console, "connection error:"));
+db.once("open", () => {
+    console.log("Database connected");
+});
 
 const app = express();
 
@@ -44,12 +51,10 @@ app.use(express.static(path.join(__dirname, "public")));
 // );
 const secret = process.env.SECRET;
 
-const store = MongoStore.create({
-  mongoUrl: dbUrl,
-  touchAfter: 24 * 60 * 60,
-  crypto: {
-    secret: "thisshouldbeabettersecret!",
-  },
+const store = new MongoDBStore({
+    url: dbUrl,
+    secret,
+    touchAfter: 24 * 60 * 60
 });
 
 store.on("error", function (e) {
